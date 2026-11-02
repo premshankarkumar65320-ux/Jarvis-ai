@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050b18">
+<meta name="description" content="J.A.R.V.I.S. futuristic personal assistant interface">
+<link rel="manifest" href="manifest.webmanifest">
+<title>J.A.R.V.I.S.</title>
+<style>
+:root{--bg:#050b18;--panel:rgba(7,24,48,.82);--cyan:#4de7ff;--blue:#168cff;--violet:#a56bff;--muted:#8ba9c9;--line:rgba(77,231,255,.28);--glow:0 0 22px rgba(30,173,255,.28)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 36%,#102b50 0,#071326 38%,#030711 78%);color:#e9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(65,180,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(65,180,255,.12) 1px,transparent 1px);background-size:36px 36px;mask-image:linear-gradient(transparent,#000 18%,#000 80%,transparent)}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);background:#061226c9;position:sticky;top:0;z-index:4;backdrop-filter:blur(12px)}
+.brand{letter-spacing:.22em;color:var(--cyan);font-weight:800;font-size:17px;text-shadow:0 0 12px #168cff}.sub{font-size:9px;color:var(--muted);letter-spacing:.2em;margin-top:4px}
+.status{font-size:10px;color:#8cf5c4;display:flex;gap:7px;align-items:center}.dot{width:7px;height:7px;border-radius:50%;background:#42f5ad;box-shadow:0 0 10px #42f5ad}
+main{max-width:1100px;margin:auto;padding:18px 14px 34px}.topline{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:.12em;margin:2px 3px 14px}
+.dashboard{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:linear-gradient(145deg,rgba(9,30,58,.88),rgba(4,14,31,.88));border:1px solid var(--line);border-radius:14px;box-shadow:var(--glow);padding:14px;position:relative;overflow:hidden}.panel:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(77,231,255,.035),transparent 65%)}
+.paneltitle{font-size:10px;letter-spacing:.2em;color:var(--cyan);margin-bottom:12px}
+.corepanel{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.core{width:min(66vw,245px);aspect-ratio:1;border-radius:50%;position:relative;display:grid;place-items:center;margin:4px auto 15px}
+.ring{position:absolute;border-radius:50%;border:1px solid var(--cyan);inset:0;box-shadow:0 0 18px rgba(40,200,255,.18),inset 0 0 20px rgba(40,200,255,.1)}
+.ring.r2{inset:10%;border-color:#248dff;border-style:dashed;animation:spin 24s linear infinite}
+.ring.r3{inset:21%;border-color:#a56bff;animation:spin 18s linear infinite reverse}
+.ring.r4{inset:31%;border:2px solid rgba(77,231,255,.55);box-shadow:0 0 35px #168cff,inset 0 0 25px #168cff}
+.core:before,.core:after{content:"";position:absolute;border-radius:50%;background:var(--cyan);filter:blur(1px);box-shadow:0 0 25px 8px #168cff}
+.core:before{width:7px;height:7px;top:2%;left:49%}.core:after{width:5px;height:5px;bottom:9%;right:12%}
+.pulse{width:25%;height:25%;border-radius:50%;background:radial-gradient(circle,#eaffff 0,#6deaff 20%,#168cff 55%,#061b42 75%);box-shadow:0 0 28px 12px rgba(22,140,255,.5);animation:pulse 2.6s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.15);box-shadow:0 0 42px 18px rgba(22,140,255,.65)}}
+.core.listening .ring{border-color:#7cffc3;box-shadow:0 0 22px rgba(124,255,195,.4)}.core.speaking .pulse{animation:pulse .65s infinite}
+.corelabel{letter-spacing:.35em;font-size:12px;color:#c8f7ff;text-shadow:0 0 12px var(--cyan)}.corehint{font-size:10px;color:var(--muted);margin-top:7px}
+.controls{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:12px}
+button{border:1px solid rgba(77,231,255,.55);background:linear-gradient(135deg,rgba(15,85,135,.7),rgba(10,30,65,.9));color:#eafaff;padding:11px 15px;border-radius:9px;font-weight:650;font-size:12px;cursor:pointer;box-shadow:0 0 14px rgba(22,140,255,.12)}
+button:active{transform:scale(.97)}button.primary{background:linear-gradient(135deg,#087fbd,#2447a4);border-color:#6deaff}button.danger{border-color:#ff6f8d;color:#ffc3cf}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{padding:10px 7px;border:1px solid rgba(77,231,255,.18);border-radius:9px;background:#07182d}.metric b{display:block;color:var(--cyan);font-size:17px}.metric span{font-size:9px;color:var(--muted);letter-spacing:.1em}
+.chatlog{height:190px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:4px 1px}.msg{font-size:12px;line-height:1.5;padding:9px 11px;border-radius:9px;max-width:92%;white-space:pre-wrap}.msg.user{align-self:flex-end;background:#123b68;border:1px solid #237ec4}.msg.jarvis{align-self:flex-start;background:#071a31;border:1px solid rgba(77,231,255,.22)}.msg.system{align-self:center;color:#ffc7a3;font-size:11px;text-align:center}
+.compose{display:flex;gap:7px;margin-top:10px}.compose input,.settings input,.settings select{min-width:0;flex:1;background:#030c1a;border:1px solid var(--line);color:#eafaff;border-radius:8px;padding:11px;font-size:12px;outline:none}.compose button{padding:10px 13px}
+.two{display:grid;grid-template-columns:1fr;gap:14px}.tilegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.tile{border:1px solid rgba(77,231,255,.2);border-radius:9px;padding:11px;background:#07182d}.tile strong{display:block;color:#d7faff;font-size:12px}.tile small{color:var(--muted);font-size:10px}
+.settings{display:flex;flex-direction:column;gap:9px}.settings label{font-size:10px;color:var(--muted);letter-spacing:.1em}.notice{font-size:11px;color:#ffd49a;line-height:1.5;border-left:2px solid #ffbd62;padding:8px 10px;background:#291b102e}
+footer{text-align:center;color:#567795;font-size:9px;letter-spacing:.15em;padding:20px}
+@media(min-width:760px){main{padding:24px}.dashboard{grid-template-columns:1.15fr .85fr}.corepanel{grid-row:span 2}.two{grid-template-columns:1fr 1fr}.core{width:250px}.chatlog{height:240px}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">J.A.R.V.I.S.</div><div class="sub">PERSONAL AI SYSTEM</div></div><div class="status"><i class="dot"></i><span id="systemStatus">LOCAL SYSTEM READY</span></div></header>
+<main>
+<div class="topline"><span id="dateText">INITIALIZING DATE</span><span id="timeText">--:--:--</span></div>
+<div class="dashboard">
+<section class="panel corepanel">
+<div class="paneltitle">◈ NEURAL INTERFACE / CORE</div>
+<div class="core" id="core"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div class="pulse"></div></div>
+<div class="corelabel">J.A.R.V.I.S.</div><div class="corehint" id="voiceState">SYSTEM STANDBY · VOICE OFF</div>
+<div class="controls"><button class="primary" id="listenBtn">🎙 START LISTENING</button><button id="stopBtn">■ STOP</button><button id="speakBtn">🔊 TEST VOICE</button></div>
+</section>
+<section class="panel">
+<div class="paneltitle">◈ SYSTEM TELEMETRY</div>
+<div class="metrics"><div class="metric"><b id="battery">--</b><span>BATTERY</span></div><div class="metric"><b id="network">--</b><span>NETWORK</span></div><div class="metric"><b id="clockMetric">--</b><span>LOCAL TIME</span></div></div>
+<div class="notice" style="margin-top:12px">Mobile browser mode: device CPU/RAM monitoring and Windows control are not available here. Install the Windows companion later for those features.</div>
+</section>
+<section class="panel">
+<div class="paneltitle">◈ COMMUNICATION CHANNEL</div>
+<div class="chatlog" id="chatlog"><div class="msg jarvis">J.A.R.V.I.S. interface initialized. AI provider is not configured yet. Add your provider through a secure backend before enabling AI conversations.</div></div>
+<div class="compose"><input id="message" placeholder="Type a message..." autocomplete="off"><button class="primary" id="sendBtn">SEND</button></div>
+</section>
+</div>
+<div class="two" style="margin-top:14px">
+<section class="panel"><div class="paneltitle">◈ QUICK MODULES</div><div class="tilegrid">
+<div class="tile"><strong>◉ AI BRAIN</strong><small id="aiStatus">Not configured</small></div>
+<div class="tile"><strong>⌕ WEB INTELLIGENCE</strong><small>Provider required</small></div>
+<div class="tile"><strong>▤ FILE ASSISTANT</strong><small>Browser file picker available</small></div>
+<div class="tile"><strong>◷ TASK CENTER</strong><small>Local reminders coming next</small></div>
+</div></section>
+<section class="panel"><div class="paneltitle">◈ CONFIGURATION</div><div class="settings">
+<label>AI BACKEND URL (OPTIONAL)</label><input id="backendUrl" placeholder="https://your-secure-backend.example">
+<div class="notice">Do not paste a private API key into this mobile webpage. A browser-only app cannot safely hide provider secrets. We will connect this screen to a secured backend after you choose an API provider.</div>
+<label>LANGUAGE</label><select id="language"><option value="en-IN">English (India)</option><option value="hi-IN">हिंदी</option></select>
+<button id="saveSettings">SAVE LOCAL SETTINGS</button>
+</div></section>
+</div>
+</main>
+<footer>J.A.R.V.I.S. · MOBILE FOUNDATION BUILD · AI NOT CONFIGURED</footer>
+<script>
+const $=id=>document.getElementById(id);
+const log=(text,kind='jarvis')=>{const d=document.createElement('div');d.className='msg '+kind;d.textContent=text;$('chatlog').appendChild(d);$('chatlog').scrollTop=$('chatlog').scrollHeight};
+function tick(){const d=new Date();$('dateText').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'short',day:'numeric'}).toUpperCase();$('timeText').textContent=d.toLocaleTimeString();$('clockMetric').textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,1000);
+$('network').textContent=navigator.onLine?'ONLINE':'OFFLINE';window.addEventListener('online',()=>$('network').textContent='ONLINE');window.addEventListener('offline',()=>$('network').textContent='OFFLINE');
+if(navigator.getBattery){navigator.getBattery().then(b=>{const upd=()=>$('battery').textContent=Math.round(b.level*100)+'%';upd();b.addEventListener('levelchange',upd);}).catch(()=>{$('battery').textContent='N/A'})}else $('battery').textContent='N/A';
+let recognition=null, listening=false;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function setVoice(s){$('voiceState').textContent=s;$('core').classList.toggle('listening',s.includes('LISTENING'));$('core').classList.toggle('speaking',s.includes('SPEAKING'));}
+function speak(t){if(!('speechSynthesis'in window)){log('Text-to-speech is not supported by this browser.','system');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=$('language').value;u.rate=1;u.onstart=()=>setVoice('J.A.R.V.I.S. SPEAKING');u.onend=()=>setVoice('SYSTEM STANDBY · VOICE OFF');speechSynthesis.speak(u)}
+function startListening(){if(!SR){log('Speech recognition is not supported in this browser. Try Chrome on Android and allow microphone permission.','system');return}if(listening)return;recognition=new SR();recognition.lang=$('language').value;recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;setVoice('MICROPHONE LISTENING')};recognition.onresult=e=>{const t=e.results[0][0].transcript;$('message').value=t;log(t,'user');sendMessage(t)};recognition.onerror=e=>log('Microphone error: '+e.error,'system');recognition.onend=()=>{listening=false;setVoice('SYSTEM STANDBY · VOICE OFF')};try{recognition.start()}catch(e){log('Could not start microphone. Please try again.','system')}}
+function stop(){if(recognition){try{recognition.stop()}catch(e){}}if('speechSynthesis'in window)speechSynthesis.cancel();listening=false;setVoice('SYSTEM STANDBY · VOICE OFF')}
+async function sendMessage(text){const t=(text??$('message').value).trim();if(!t)return; if(text===undefined)log(t,'user');$('message').value='';const url=$('backendUrl').value.trim();if(!url){log('AI is not connected yet. No API provider or secure backend has been configured. Your message was not sent anywhere.','system');return}
+try{const r=await fetch(url.replace(/\/$/,'')+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,language:$('language').value})});if(!r.ok)throw new Error('Backend returned HTTP '+r.status);const data=await r.json();if(typeof data.reply!=='string')throw new Error('Backend response must contain a string named reply');log(data.reply);speak(data.reply)}catch(e){log('Connection failed: '+e.message,'system')}}
+$('listenBtn').onclick=startListening;$('stopBtn').onclick=stop;$('speakBtn').onclick=()=>speak('Hello. I am JARVIS. Voice output is ready.');$('sendBtn').onclick=()=>sendMessage();$('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});$('saveSettings').onclick=()=>{localStorage.setItem('jarvisBackendUrl',$('backendUrl').value.trim());localStorage.setItem('jarvisLanguage',$('language').value);log('Local settings saved on this device.','system')};
+$('backendUrl').value=localStorage.getItem('jarvisBackendUrl')||'';$('language').value=localStorage.getItem('jarvisLanguage')||'en-IN';
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
