@@ -161,4 +161,64 @@ $('listenBtn').onclick=startListening;$('stopBtn').onclick=stop;$('speakBtn').on
 $('backendUrl').value=localStorage.getItem('jarvisBackendUrl')||'';$('language').value=localStorage.getItem('jarvisLanguage')||'en-IN';
 if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
+<!-- JARVIS ADVANCED DASHBOARD -->
+<section id="advanced-dashboard" style="
+background:linear-gradient(145deg,#061629,#102d4b);
+color:#e8f7ff;
+padding:20px;
+margin:15px;
+border:1px solid #168cff;
+border-radius:20px;
+font-family:Arial,sans-serif;
+">
+
+<h2 style="text-align:center;color:#39c9ff;">
+⚡ JARVIS AI DASHBOARD
+</h2>
+
+<p style="text-align:center;color:#39ffb0;">
+● SYSTEM ONLINE
+</p>
+
+<hr style="border-color:#168cff;">
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🎙️ Voice AI</h3>
+<p>Voice Assistant</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🧠 AI Brain</h3>
+<p>AI Connection</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🌐 Internet</h3>
+<p>Network Monitor</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>👁️ Vision</h3>
+<p>Vision Module</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>💾 Memory</h3>
+<p>Memory Module</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>⚙️ Settings</h3>
+<p>System Settings</p>
+</div>
+
+</div>
+
+<p style="text-align:center;color:#39c9ff;margin-top:20px;">
+JARVIS AI — ADVANCED CONTROL CENTER
+</p>
+
+</section>
 </body></html>
