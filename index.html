@@ -39,6 +39,69 @@ button:active{transform:scale(.97)}button.primary{background:linear-gradient(135
 .settings{display:flex;flex-direction:column;gap:9px}.settings label{font-size:10px;color:var(--muted);letter-spacing:.1em}.notice{font-size:11px;color:#ffd49a;line-height:1.5;border-left:2px solid #ffbd62;padding:8px 10px;background:#291b102e}
 footer{text-align:center;color:#567795;font-size:9px;letter-spacing:.15em;padding:20px}
 @media(min-width:760px){main{padding:24px}.dashboard{grid-template-columns:1.15fr .85fr}.corepanel{grid-row:span 2}.two{grid-template-columns:1fr 1fr}.core{width:250px}.chatlog{height:240px}}
+
+/* JARVIS ADVANCED DASHBOARD UPGRADE */
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, #12365c 0%, #071321 48%, #030811 100%);
+  color: #e8f7ff;
+}
+
+header {
+  backdrop-filter: blur(16px);
+}
+
+.panel {
+  background: linear-gradient(145deg,
+    rgba(18, 48, 78, .92),
+    rgba(5, 17, 33, .96));
+  border: 1px solid rgba(75, 190, 255, .35);
+  border-radius: 18px;
+  box-shadow: 0 0 22px rgba(0, 140, 255, .12);
+  transition: .25s ease;
+}
+
+.panel:hover {
+  border-color: #39c9ff;
+  box-shadow: 0 0 25px rgba(0, 170, 255, .2);
+}
+
+button {
+  border-radius: 12px;
+  min-height: 42px;
+  cursor: pointer;
+}
+
+button.primary {
+  box-shadow: 0 0 15px rgba(50, 180, 255, .3);
+}
+
+.core {
+  filter: drop-shadow(0 0 16px #168cff);
+}
+
+.chatlog {
+  border-radius: 14px;
+  background: rgba(0, 8, 20, .55);
+}
+
+input, select {
+  background: #0b2038;
+  color: #e8f7ff;
+  border: 1px solid #2878a8;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    grid-template-columns: 1fr !important;
+  }
+  .panel {
+    padding: 14px;
+  }
+}
+  
 </style>
 </head>
 <body>
