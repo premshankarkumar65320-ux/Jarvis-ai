@@ -446,6 +446,25 @@ aiButton.onclick=async()=>{
     const result=document.createElement("pre");
     result.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;background:#10243a;color:white;padding:12px;border-radius:8px;";
     result.textContent=data.reply || "No AI response received.";
+   const copyBtn=document.createElement("button");
+copyBtn.textContent="📋 Copy Code";
+copyBtn.onclick=()=>{
+  navigator.clipboard.writeText(data.reply);
+  alert("Project copied!");
+};
+
+const downloadBtn=document.createElement("button");
+downloadBtn.textContent="📥 Download Project";
+downloadBtn.onclick=()=>{
+  const file=new Blob([data.reply],{type:"text/plain"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(file);
+  link.download="JARVIS-Project.txt";
+  link.click();
+  URL.revokeObjectURL(link.href);
+};
+
+card.append(copyBtn,downloadBtn);
     card.appendChild(result);
 
   }catch(error){
