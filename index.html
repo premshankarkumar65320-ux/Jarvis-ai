@@ -292,5 +292,178 @@ try {
 }
 }
 </script>
-  
+<style>
+#my-projects-btn {
+  position:fixed;
+  bottom:20px;
+  right:15px;
+  z-index:9999;
+  background:#00cfff;
+  color:#001;
+  padding:14px 20px;
+  border:0;
+  border-radius:12px;
+  font-weight:bold;
+}
+#my-projects-panel {
+  display:none;
+  position:relative;
+  z-index:1000;
+  margin:20px;
+  padding:18px;
+  background:#071525;
+  color:white;
+  border:1px solid #00cfff;
+  border-radius:15px;
+}
+#my-projects-panel input,
+#my-projects-panel textarea {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin:7px 0;
+  background:#10243a;
+  color:white;
+  border:1px solid #00cfff;
+  border-radius:8px;
+}
+#my-projects-panel button {
+  padding:9px 13px;
+  margin:5px;
+  border:0;
+  border-radius:7px;
+  background:#00cfff;
+  color:#001;
+}
+.jarvis-project-card {
+  border:1px solid #00cfff;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+}
+</style>
+
+<button id="my-projects-btn" onclick="openMyProjects()">
+📁 My Projects
+</button>
+
+<section id="my-projects-panel">
+<h2 style="color:#00cfff">📁 J.A.R.V.I.S. MY PROJECTS</h2>
+
+<form id="my-project-form">
+<input id="mp-name" placeholder="Project Name" required>
+<input id="mp-category" placeholder="Category / Subject">
+<input id="mp-class" placeholder="Class">
+<textarea id="mp-description" placeholder="Project Description" required></textarea>
+<button type="submit">+ Add Project</button>
+</form>
+
+<div id="my-project-list"></div>
+
+<button onclick="closeMyProjects()">Close</button>
+</section>
+
+<script>
+function openMyProjects() {
+  document.getElementById("my-projects-panel").style.display="block";
+  showMyProjects();
+}
+
+function closeMyProjects() {
+  document.getElementById("my-projects-panel").style.display="none";
+}
+
+function getMyProjects() {
+  try {
+    return JSON.parse(localStorage.getItem("jarvis_my_projects") || "[]");
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveMyProjects(data) {
+  localStorage.setItem("jarvis_my_projects", JSON.stringify(data));
+}
+
+function showMyProjects() {
+  const list=document.getElementById("my-project-list");
+  list.replaceChildren();
+
+  const projects=getMyProjects();
+
+  if(projects.length===0) {
+    list.textContent="Abhi koi project nahi hai. Apna pehla project add karo!";
+    return;
+  }
+
+  projects.forEach((p,i)=>{
+    const card=document.createElement("div");
+    card.className="jarvis-project-card";
+
+    const title=document.createElement("h3");
+    title.textContent=p.name;
+
+    const info=document.createElement("p");
+    info.textContent="Category: "+p.category+" | Class: "+p.className;
+
+    const desc=document.createElement("p");
+    desc.textContent=p.description;
+
+    const edit=document.createElement("button");
+    edit.textContent="Edit";
+    edit.onclick=()=>editMyProject(i);
+
+    const del=document.createElement("button");
+    del.textContent="Delete";
+    del.onclick=()=>deleteMyProject(i);
+
+    card.append(title,info,desc,edit,del);
+    list.appendChild(card);
+  });
+}
+
+document.getElementById("my-project-form").addEventListener("submit",function(e) {
+  e.preventDefault();
+
+  const projects=getMyProjects();
+
+  projects.push({
+    name:document.getElementById("mp-name").value.trim(),
+    category:document.getElementById("mp-category").value.trim(),
+    className:document.getElementById("mp-class").value.trim(),
+    description:document.getElementById("mp-description").value.trim()
+  });
+
+  saveMyProjects(projects);
+  this.reset();
+  showMyProjects();
+});
+
+function editMyProject(i) {
+  const projects=getMyProjects();
+  const p=projects[i];
+
+  const name=prompt("Project name:",p.name);
+  if(name===null) return;
+  if(!name.trim()) return;
+
+  const description=prompt("Project description:",p.description);
+  if(description===null) return;
+
+  p.name=name.trim();
+  p.description=description.trim();
+
+  saveMyProjects(projects);
+  showMyProjects();
+}
+
+function deleteMyProject(i) {
+  if(!confirm("Delete this project?")) return;
+
+  const projects=getMyProjects();
+  projects.splice(i,1);
+  saveMyProjects(projects);
+  showMyProjects();
+}
+</script>  
 </body></html>
