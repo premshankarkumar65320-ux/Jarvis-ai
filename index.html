@@ -233,7 +233,29 @@ JARVIS AI — ADVANCED CONTROL CENTER
 
 <script>
 async function buildWebsite() {
-  const request = document.getElementById("website-request").value.trim();
+  let request = document.getElementById("website-request").value.trim();
+
+const siteName = prompt("What is your website name?");
+if (siteName === null) return;
+
+const purpose = prompt("What is this website for?");
+if (purpose === null) return;
+
+const pages = prompt("Which pages do you need? (Home, About, Contact, etc.)");
+if (pages === null) return;
+
+const design = prompt("Which design do you prefer? (Modern, Premium, Futuristic, etc.)");
+if (design === null) return;
+
+const colors = prompt("Which colors do you like?");
+if (colors === null) return;
+
+request = "Website name: " + siteName +
+". Purpose: " + purpose +
+". Pages: " + pages +
+". Design: " + design +
+". Colors: " + colors +
+". Original request: " + request;
   if (!request) {
     alert("Please describe your website first.");
     return;
