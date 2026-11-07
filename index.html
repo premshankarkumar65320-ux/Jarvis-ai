@@ -298,7 +298,20 @@ try {
   html = html.replace(/^```(?:html)?\s*/i, "").replace(/\s*```$/, "");
 
   document.getElementById("website-preview").srcdoc = html;
+const downloadBtn=document.createElement("button");
+downloadBtn.textContent="📥 Download Website";
 
+downloadBtn.onclick=()=>{
+  const blob=new Blob([html],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="ShopKart.html";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("website-preview").insertAdjacentElement("afterend",downloadBtn);
 } catch (error) {
   alert("Website generation failed: " + error.message);
 }
