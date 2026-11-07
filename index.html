@@ -416,7 +416,45 @@ function showMyProjects() {
     const del=document.createElement("button");
     del.textContent="Delete";
     del.onclick=()=>deleteMyProject(i);
+const aiButton=document.createElement("button");
+aiButton.textContent="🤖 Generate with JARVIS AI";
 
+aiButton.onclick=async()=>{
+  const backendUrl=(document.getElementById("backendUrl")?.value || localStorage.getItem("jarvisBackendUrl") || "").trim();
+
+  if(!backendUrl){
+    alert("Please connect JARVIS Backend in Settings.");
+    return;
+  }
+
+  aiButton.disabled=true;
+  aiButton.textContent="Generating...";
+
+  try{
+    const response=await fetch(backendUrl.replace(/\/$/,"")+"/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        message:"Create a detailed educational project plan for: "+p.name+". Category: "+p.category+". Class: "+p.className+". Description: "+p.description+". Include abstract, modules, components, architecture, safe wiring guidance if relevant, sample code, and PPT points. Explain clearly.",
+        language:"en-IN"
+      })
+    });
+
+    if(!response.ok) throw new Error("Backend connection failed");
+
+    const data=await response.json();
+    const result=document.createElement("pre");
+    result.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;background:#10243a;color:white;padding:12px;border-radius:8px;";
+    result.textContent=data.reply || "No AI response received.";
+    card.appendChild(result);
+
+  }catch(error){
+    alert("AI Error: "+error.message);
+  }finally{
+    aiButton.disabled=false;
+    aiButton.textContent="🤖 Generate with JARVIS AI";
+  }
+};
     card.append(title,info,desc,edit,del);
     list.appendChild(card);
   });
