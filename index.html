@@ -221,4 +221,25 @@ JARVIS AI — ADVANCED CONTROL CENTER
 </p>
 
 </section>
+
+<section id="coding-studio" style="padding:20px; margin:20px; background:#071525; border:1px solid #00d9ff; border-radius:16px; color:#fff;">
+  <h2 style="color:#00d9ff;">💻 J.A.R.V.I.S. CODING STUDIO</h2>
+  <p>Tell JARVIS what website you want to create.</p>
+  <textarea id="website-request" placeholder="Describe your website..." style="width:100%;height:90px;background:#10243a;color:white;padding:12px;border:1px solid #00d9ff;border-radius:8px;"></textarea>
+  <button onclick="buildWebsite()" style="margin-top:12px;padding:12px;background:#00bfff;color:#001;border:0;border-radius:8px;">Generate Website</button>
+  <h3>Live Preview</h3>
+  <iframe id="website-preview" style="width:100%;height:350px;background:white;border:1px solid #00d9ff;border-radius:8px;"></iframe>
+</section>
+
+<script>
+async function buildWebsite() {
+  const request = document.getElementById("website-request").value.trim();
+  if (!request) {
+    alert("Please describe your website first.");
+    return;
+  }
+  alert("Website Builder UI is ready. AI code generation will be connected next.");
+}
+</script>
+  
 </body></html>
