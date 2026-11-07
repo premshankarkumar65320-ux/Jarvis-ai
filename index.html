@@ -238,7 +238,36 @@ async function buildWebsite() {
     alert("Please describe your website first.");
     return;
   }
-  alert("Website Builder UI is ready. AI code generation will be connected next.");
+  const backendUrl = (document.getElementById("backendUrl")?.value || localStorage.getItem("jarvisBackendUrl") || "").trim();
+
+if (!backendUrl) {
+  alert("Please connect JARVIS AI Backend in Settings first.");
+  return;
+}
+
+try {
+  const response = await fetch(backendUrl.replace(/\/$/, "") + "/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "Create a complete working HTML website for this request: " + request + ". Return only complete HTML code, without markdown.",
+      language: "en-IN"
+    })
+  });
+
+  if (!response.ok) throw new Error("Backend connection failed");
+
+  const data = await response.json();
+  if (typeof data.reply !== "string") throw new Error("Invalid AI response");
+
+  let html = data.reply.trim();
+  html = html.replace(/^```(?:html)?\s*/i, "").replace(/\s*```$/, "");
+
+  document.getElementById("website-preview").srcdoc = html;
+
+} catch (error) {
+  alert("Website generation failed: " + error.message);
+}
 }
 </script>
   
