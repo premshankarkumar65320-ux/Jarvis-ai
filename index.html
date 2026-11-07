@@ -465,6 +465,39 @@ downloadBtn.onclick=()=>{
 };
 
 card.append(copyBtn,downloadBtn);
+   const pdfBtn=document.createElement("button");
+pdfBtn.textContent="📄 Download as PDF";
+
+pdfBtn.onclick=()=>{
+  const printWindow=window.open("","_blank");
+
+  if(!printWindow){
+    alert("Please allow pop-ups to download PDF.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>JARVIS Project Report</title>
+      <style>
+        body{font-family:Arial;padding:25px;line-height:1.6;}
+        pre{white-space:pre-wrap;overflow-wrap:anywhere;}
+      </style>
+    </head>
+    <body>
+      <h1>J.A.R.V.I.S. Project Report</h1>
+      <pre>${result.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre>
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
+
+card.appendChild(pdfBtn); 
     card.appendChild(result);
 
   }catch(error){
