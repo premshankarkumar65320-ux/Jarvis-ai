@@ -1,0 +1,26 @@
+{
+  "name": "jarvis-ai",
+  "version": "1.0.0",
+  "description": "- Responsive futuristic JARVIS HUD interface. - Local date, clock, online/offline status and battery level where supported. - Browser speech recognition where supported (Chrome on Android is recommended). - Speech synthesis / spoken test response. - Local language and backend URL settings. - Chat UI that clearly reports when AI is not configured. - Optional backend connection contract: `POST {BACKEND_URL}/chat` with JSON `{ \"message\": \"...\", \"language\": \"en-IN\" }`; expected JSON response `{ \"reply\": \"...\" }`.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/premshankarkumar65320-ux/Jarvis-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/premshankarkumar65320-ux/Jarvis-ai/issues"
+  },
+  "homepage": "https://github.com/premshankarkumar65320-ux/Jarvis-ai#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}

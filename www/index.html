@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050b18">
+<meta name="description" content="J.A.R.V.I.S. futuristic personal assistant interface">
+<link rel="manifest" href="manifest.webmanifest">
+<title>J.A.R.V.I.S.</title>
+<style>
+:root{--bg:#050b18;--panel:rgba(7,24,48,.82);--cyan:#4de7ff;--blue:#168cff;--violet:#a56bff;--muted:#8ba9c9;--line:rgba(77,231,255,.28);--glow:0 0 22px rgba(30,173,255,.28)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 36%,#102b50 0,#071326 38%,#030711 78%);color:#e9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(65,180,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(65,180,255,.12) 1px,transparent 1px);background-size:36px 36px;mask-image:linear-gradient(transparent,#000 18%,#000 80%,transparent)}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);background:#061226c9;position:sticky;top:0;z-index:4;backdrop-filter:blur(12px)}
+.brand{letter-spacing:.22em;color:var(--cyan);font-weight:800;font-size:17px;text-shadow:0 0 12px #168cff}.sub{font-size:9px;color:var(--muted);letter-spacing:.2em;margin-top:4px}
+.status{font-size:10px;color:#8cf5c4;display:flex;gap:7px;align-items:center}.dot{width:7px;height:7px;border-radius:50%;background:#42f5ad;box-shadow:0 0 10px #42f5ad}
+main{max-width:1100px;margin:auto;padding:18px 14px 34px}.topline{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:.12em;margin:2px 3px 14px}
+.dashboard{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:linear-gradient(145deg,rgba(9,30,58,.88),rgba(4,14,31,.88));border:1px solid var(--line);border-radius:14px;box-shadow:var(--glow);padding:14px;position:relative;overflow:hidden}.panel:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(77,231,255,.035),transparent 65%)}
+.paneltitle{font-size:10px;letter-spacing:.2em;color:var(--cyan);margin-bottom:12px}
+.corepanel{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.core{width:min(66vw,245px);aspect-ratio:1;border-radius:50%;position:relative;display:grid;place-items:center;margin:4px auto 15px}
+.ring{position:absolute;border-radius:50%;border:1px solid var(--cyan);inset:0;box-shadow:0 0 18px rgba(40,200,255,.18),inset 0 0 20px rgba(40,200,255,.1)}
+.ring.r2{inset:10%;border-color:#248dff;border-style:dashed;animation:spin 24s linear infinite}
+.ring.r3{inset:21%;border-color:#a56bff;animation:spin 18s linear infinite reverse}
+.ring.r4{inset:31%;border:2px solid rgba(77,231,255,.55);box-shadow:0 0 35px #168cff,inset 0 0 25px #168cff}
+.core:before,.core:after{content:"";position:absolute;border-radius:50%;background:var(--cyan);filter:blur(1px);box-shadow:0 0 25px 8px #168cff}
+.core:before{width:7px;height:7px;top:2%;left:49%}.core:after{width:5px;height:5px;bottom:9%;right:12%}
+.pulse{width:25%;height:25%;border-radius:50%;background:radial-gradient(circle,#eaffff 0,#6deaff 20%,#168cff 55%,#061b42 75%);box-shadow:0 0 28px 12px rgba(22,140,255,.5);animation:pulse 2.6s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.15);box-shadow:0 0 42px 18px rgba(22,140,255,.65)}}
+.core.listening .ring{border-color:#7cffc3;box-shadow:0 0 22px rgba(124,255,195,.4)}.core.speaking .pulse{animation:pulse .65s infinite}
+.corelabel{letter-spacing:.35em;font-size:12px;color:#c8f7ff;text-shadow:0 0 12px var(--cyan)}.corehint{font-size:10px;color:var(--muted);margin-top:7px}
+.controls{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:12px}
+button{border:1px solid rgba(77,231,255,.55);background:linear-gradient(135deg,rgba(15,85,135,.7),rgba(10,30,65,.9));color:#eafaff;padding:11px 15px;border-radius:9px;font-weight:650;font-size:12px;cursor:pointer;box-shadow:0 0 14px rgba(22,140,255,.12)}
+button:active{transform:scale(.97)}button.primary{background:linear-gradient(135deg,#087fbd,#2447a4);border-color:#6deaff}button.danger{border-color:#ff6f8d;color:#ffc3cf}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{padding:10px 7px;border:1px solid rgba(77,231,255,.18);border-radius:9px;background:#07182d}.metric b{display:block;color:var(--cyan);font-size:17px}.metric span{font-size:9px;color:var(--muted);letter-spacing:.1em}
+.chatlog{height:190px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:4px 1px}.msg{font-size:12px;line-height:1.5;padding:9px 11px;border-radius:9px;max-width:92%;white-space:pre-wrap}.msg.user{align-self:flex-end;background:#123b68;border:1px solid #237ec4}.msg.jarvis{align-self:flex-start;background:#071a31;border:1px solid rgba(77,231,255,.22)}.msg.system{align-self:center;color:#ffc7a3;font-size:11px;text-align:center}
+.compose{display:flex;gap:7px;margin-top:10px}.compose input,.settings input,.settings select{min-width:0;flex:1;background:#030c1a;border:1px solid var(--line);color:#eafaff;border-radius:8px;padding:11px;font-size:12px;outline:none}.compose button{padding:10px 13px}
+.two{display:grid;grid-template-columns:1fr;gap:14px}.tilegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.tile{border:1px solid rgba(77,231,255,.2);border-radius:9px;padding:11px;background:#07182d}.tile strong{display:block;color:#d7faff;font-size:12px}.tile small{color:var(--muted);font-size:10px}
+.settings{display:flex;flex-direction:column;gap:9px}.settings label{font-size:10px;color:var(--muted);letter-spacing:.1em}.notice{font-size:11px;color:#ffd49a;line-height:1.5;border-left:2px solid #ffbd62;padding:8px 10px;background:#291b102e}
+footer{text-align:center;color:#567795;font-size:9px;letter-spacing:.15em;padding:20px}
+@media(min-width:760px){main{padding:24px}.dashboard{grid-template-columns:1.15fr .85fr}.corepanel{grid-row:span 2}.two{grid-template-columns:1fr 1fr}.core{width:250px}.chatlog{height:240px}}
+
+/* JARVIS ADVANCED DASHBOARD UPGRADE */
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, #12365c 0%, #071321 48%, #030811 100%);background-image: url('jarvis-background.png');
+background-image: url('jarvis-background.png');background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
+  color: #e8f7ff;
+}
+
+header {
+  backdrop-filter: blur(16px);
+}
+
+.panel {
+  background: linear-gradient(145deg,
+    rgba(18, 48, 78, .92),
+    rgba(5, 17, 33, .96));
+  border: 1px solid rgba(75, 190, 255, .35);
+  border-radius: 18px;
+  box-shadow: 0 0 22px rgba(0, 140, 255, .12);
+  transition: .25s ease;
+}
+
+.panel:hover {
+  border-color: #39c9ff;
+  box-shadow: 0 0 25px rgba(0, 170, 255, .2);
+}
+
+button {
+  border-radius: 12px;
+  min-height: 42px;
+  cursor: pointer;
+}
+
+button.primary {
+  box-shadow: 0 0 15px rgba(50, 180, 255, .3);
+}
+
+.core {
+  filter: drop-shadow(0 0 16px #168cff);
+}
+
+.chatlog {
+  border-radius: 14px;
+  background: rgba(0, 8, 20, .55);
+}
+
+input, select {
+  background: #0b2038;
+  color: #e8f7ff;
+  border: 1px solid #2878a8;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    grid-template-columns: 1fr !important;
+  }
+  .panel {
+    padding: 14px;
+  }
+}
+  
+</style>
+</head>
+<body>
+<header><div><div class="brand">J.A.R.V.I.S.</div><div class="sub">PERSONAL AI SYSTEM</div></div><div class="status"><i class="dot"></i><span id="systemStatus">LOCAL SYSTEM READY</span></div></header>
+<main>
+<div class="topline"><span id="dateText">INITIALIZING DATE</span><span id="timeText">--:--:--</span></div>
+<div class="dashboard">
+<section class="panel corepanel">
+<div class="paneltitle">◈ NEURAL INTERFACE / CORE</div>
+<div class="core" id="core"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div class="pulse"></div></div>
+<div class="corelabel">J.A.R.V.I.S.</div><div class="corehint" id="voiceState">SYSTEM STANDBY · VOICE OFF</div>
+<div class="controls"><button class="primary" id="listenBtn">🎙 START LISTENING</button><button id="stopBtn">■ STOP</button><button id="speakBtn">🔊 TEST VOICE</button></div>
+</section>
+<section class="panel">
+<div class="paneltitle">◈ SYSTEM TELEMETRY</div>
+<div class="metrics"><div class="metric"><b id="battery">--</b><span>BATTERY</span></div><div class="metric"><b id="network">--</b><span>NETWORK</span></div><div class="metric"><b id="clockMetric">--</b><span>LOCAL TIME</span></div></div>
+<div class="notice" style="margin-top:12px">Mobile browser mode: device CPU/RAM monitoring and Windows control are not available here. Install the Windows companion later for those features.</div>
+</section>
+<section class="panel">
+<div class="paneltitle">◈ COMMUNICATION CHANNEL</div>
+<div class="chatlog" id="chatlog"><div class="msg jarvis">J.A.R.V.I.S. interface initialized. AI provider is not configured yet. Add your provider through a secure backend before enabling AI conversations.</div></div>
+<div class="compose"><input id="message" placeholder="Type a message..." autocomplete="off"><button class="primary" id="sendBtn">SEND</button></div>
+</section>
+</div>
+<div class="two" style="margin-top:14px">
+<section class="panel"><div class="paneltitle">◈ QUICK MODULES</div><div class="tilegrid">
+<div class="tile"><strong>◉ AI BRAIN</strong><small id="aiStatus">Not configured</small></div>
+<div class="tile"><strong>⌕ WEB INTELLIGENCE</strong><small>Provider required</small></div>
+<div class="tile"><strong>▤ FILE ASSISTANT</strong><small>Browser file picker available</small></div>
+<div class="tile"><strong>◷ TASK CENTER</strong><small>Local reminders coming next</small></div>
+</div></section>
+<section class="panel"><div class="paneltitle">◈ CONFIGURATION</div><div class="settings">
+<label>AI BACKEND URL (OPTIONAL)</label><input id="backendUrl" placeholder="https://your-secure-backend.example">
+<div class="notice">Do not paste a private API key into this mobile webpage. A browser-only app cannot safely hide provider secrets. We will connect this screen to a secured backend after you choose an API provider.</div>
+<label>LANGUAGE</label><select id="language"><option value="en-IN">English (India)</option><option value="hi-IN">हिंदी</option></select>
+<button id="saveSettings">SAVE LOCAL SETTINGS</button>
+</div></section>
+</div>
+</main>
+<footer>J.A.R.V.I.S. · MOBILE FOUNDATION BUILD · AI NOT CONFIGURED</footer>
+<script>
+const $=id=>document.getElementById(id);
+const log=(text,kind='jarvis')=>{const d=document.createElement('div');d.className='msg '+kind;d.textContent=text;$('chatlog').appendChild(d);$('chatlog').scrollTop=$('chatlog').scrollHeight};
+function tick(){const d=new Date();$('dateText').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'short',day:'numeric'}).toUpperCase();$('timeText').textContent=d.toLocaleTimeString();$('clockMetric').textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,1000);
+$('network').textContent=navigator.onLine?'ONLINE':'OFFLINE';window.addEventListener('online',()=>$('network').textContent='ONLINE');window.addEventListener('offline',()=>$('network').textContent='OFFLINE');
+if(navigator.getBattery){navigator.getBattery().then(b=>{const upd=()=>$('battery').textContent=Math.round(b.level*100)+'%';upd();b.addEventListener('levelchange',upd);}).catch(()=>{$('battery').textContent='N/A'})}else $('battery').textContent='N/A';
+let recognition=null, listening=false;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function setVoice(s){$('voiceState').textContent=s;$('core').classList.toggle('listening',s.includes('LISTENING'));$('core').classList.toggle('speaking',s.includes('SPEAKING'));}
+function speak(t){if(!('speechSynthesis'in window)){log('Text-to-speech is not supported by this browser.','system');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=$('language').value;u.rate=1;u.onstart=()=>setVoice('J.A.R.V.I.S. SPEAKING');u.onend=()=>setVoice('SYSTEM STANDBY · VOICE OFF');speechSynthesis.speak(u)}
+function startListening(){if(!SR){log('Speech recognition is not supported in this browser. Try Chrome on Android and allow microphone permission.','system');return}if(listening)return;recognition=new SR();recognition.lang=$('language').value;recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;setVoice('MICROPHONE LISTENING')};recognition.onresult=e=>{const t=e.results[0][0].transcript;$('message').value=t;log(t,'user');sendMessage(t)};recognition.onerror=e=>log('Microphone error: '+e.error,'system');recognition.onend=()=>{listening=false;setVoice('SYSTEM STANDBY · VOICE OFF')};try{recognition.start()}catch(e){log('Could not start microphone. Please try again.','system')}}
+function stop(){if(recognition){try{recognition.stop()}catch(e){}}if('speechSynthesis'in window)speechSynthesis.cancel();listening=false;setVoice('SYSTEM STANDBY · VOICE OFF')}
+async function sendMessage(text){const t=(text??$('message').value).trim();if(!t)return; if(text===undefined)log(t,'user');$('message').value='';const url=$('backendUrl').value.trim();if(!url){log('AI is not connected yet. No API provider or secure backend has been configured. Your message was not sent anywhere.','system');return}
+try{const r=await fetch(url.replace(/\/$/,'')+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,language:$('language').value})});if(!r.ok)throw new Error('Backend returned HTTP '+r.status);const data=await r.json();if(typeof data.reply!=='string')throw new Error('Backend response must contain a string named reply');log(data.reply);speak(data.reply)}catch(e){log('Connection failed: '+e.message,'system')}}
+$('listenBtn').onclick=startListening;$('stopBtn').onclick=stop;$('speakBtn').onclick=()=>speak('Hello. I am JARVIS. Voice output is ready.');$('sendBtn').onclick=()=>sendMessage();$('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});$('saveSettings').onclick=()=>{localStorage.setItem('jarvisBackendUrl',$('backendUrl').value.trim());localStorage.setItem('jarvisLanguage',$('language').value);log('Local settings saved on this device.','system')};
+$('backendUrl').value=localStorage.getItem('jarvisBackendUrl')||'';$('language').value=localStorage.getItem('jarvisLanguage')||'en-IN';
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+<!-- JARVIS ADVANCED DASHBOARD -->
+<section id="advanced-dashboard" style="
+background:linear-gradient(145deg,#061629,#102d4b);
+color:#e8f7ff;
+padding:20px;
+margin:15px;
+border:1px solid #168cff;
+border-radius:20px;
+font-family:Arial,sans-serif;
+">
+
+<h2 style="text-align:center;color:#39c9ff;">
+⚡ JARVIS AI DASHBOARD
+</h2>
+
+<p style="text-align:center;color:#39ffb0;">
+● SYSTEM ONLINE
+</p>
+
+<hr style="border-color:#168cff;">
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🎙️ Voice AI</h3>
+<p>Voice Assistant</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🧠 AI Brain</h3>
+<p>AI Connection</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>🌐 Internet</h3>
+<p>Network Monitor</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>👁️ Vision</h3>
+<p>Vision Module</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>💾 Memory</h3>
+<p>Memory Module</p>
+</div>
+
+<div style="background:#102d4b;padding:15px;border-radius:12px;">
+<h3>⚙️ Settings</h3>
+<p>System Settings</p>
+</div>
+
+</div>
+
+<p style="text-align:center;color:#39c9ff;margin-top:20px;">
+JARVIS AI — ADVANCED CONTROL CENTER
+</p>
+
+</section>
+
+<section id="coding-studio" style="padding:20px; margin:20px; background:#071525; border:1px solid #00d9ff; border-radius:16px; color:#fff;">
+  <h2 style="color:#00d9ff;">💻 J.A.R.V.I.S. CODING STUDIO</h2>
+  <p>Tell JARVIS what website you want to create.</p>
+  <textarea id="website-request" placeholder="Describe your website..." style="width:100%;height:90px;background:#10243a;color:white;padding:12px;border:1px solid #00d9ff;border-radius:8px;"></textarea>
+  <button onclick="buildWebsite()" style="margin-top:12px;padding:12px;background:#00bfff;color:#001;border:0;border-radius:8px;">Generate Website</button>
+  <h3>Live Preview</h3>
+  <iframe id="website-preview" style="width:100%;height:350px;background:white;border:1px solid #00d9ff;border-radius:8px;"></iframe>
+</section>
+
+<script>
+async function buildWebsite() {
+  let request = document.getElementById("website-request").value.trim();
+const websiteType = prompt("What type of website do you want? (Business, E-commerce, Portfolio, School, Blog)");
+if (websiteType === null) return;
+
+const features = prompt("Which features do you need? (Login, Contact Form, Products, Search, Dashboard)");
+if (features === null) return;
+
+const responsive = prompt("Should the website work on mobile, tablet and computer? (Yes/No)");
+if (responsive === null) return;
+
+request += "\nWebsite type: " + websiteType;
+request += "\nRequired features: " + features;
+request += "\nResponsive design: " + responsive;
+request += "\nCreate a complete original website with working navigation, polished design, and functional front-end interactions. Return only complete HTML code.";
+const siteName = prompt("What is your website name?");
+if (siteName === null) return;
+
+const purpose = prompt("What is this website for?");
+if (purpose === null) return;
+
+const pages = prompt("Which pages do you need? (Home, About, Contact, etc.)");
+if (pages === null) return;
+
+const design = prompt("Which design do you prefer? (Modern, Premium, Futuristic, etc.)");
+if (design === null) return;
+
+const colors = prompt("Which colors do you like?");
+if (colors === null) return;
+
+request = "Website name: " + siteName +
+". Purpose: " + purpose +
+". Pages: " + pages +
+". Design: " + design +
+". Colors: " + colors +
+". Original request: " + request;
+  if (!request) {
+    alert("Please describe your website first.");
+    return;
+  }
+  const backendUrl = (document.getElementById("backendUrl")?.value || localStorage.getItem("jarvisBackendUrl") || "").trim();
+
+if (!backendUrl) {
+  alert("Please connect JARVIS AI Backend in Settings first.");
+  return;
+}
+
+try {
+  const response = await fetch(backendUrl.replace(/\/$/, "") + "/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "Create a complete working HTML website for this request: " + request + ". Return only complete HTML code, without markdown.",
+      language: "en-IN"
+    })
+  });
+
+  if (!response.ok) throw new Error("Backend connection failed");
+
+  const data = await response.json();
+  if (typeof data.reply !== "string") throw new Error("Invalid AI response");
+
+  let html = data.reply.trim();
+  html = html.replace(/^```(?:html)?\s*/i, "").replace(/\s*```$/, "");
+
+  document.getElementById("website-preview").srcdoc = html;
+const downloadBtn=document.createElement("button");
+downloadBtn.textContent="📥 Download Website";
+
+downloadBtn.onclick=()=>{
+  const blob=new Blob([html],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="ShopKart.html";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("website-preview").insertAdjacentElement("afterend",downloadBtn);
+} catch (error) {
+  alert("Website generation failed: " + error.message);
+}
+}
+</script>
+<style>
+#my-projects-btn {
+  position:fixed;
+  bottom:20px;
+  right:15px;
+  z-index:9999;
+  background:#00cfff;
+  color:#001;
+  padding:14px 20px;
+  border:0;
+  border-radius:12px;
+  font-weight:bold;
+}
+#my-projects-panel {
+  display:none;
+  position:relative;
+  z-index:1000;
+  margin:20px;
+  padding:18px;
+  background:#071525;
+  color:white;
+  border:1px solid #00cfff;
+  border-radius:15px;
+}
+#my-projects-panel input,
+#my-projects-panel textarea {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin:7px 0;
+  background:#10243a;
+  color:white;
+  border:1px solid #00cfff;
+  border-radius:8px;
+}
+#my-projects-panel button {
+  padding:9px 13px;
+  margin:5px;
+  border:0;
+  border-radius:7px;
+  background:#00cfff;
+  color:#001;
+}
+.jarvis-project-card {
+  border:1px solid #00cfff;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+}
+</style>
+
+<button id="my-projects-btn" onclick="openMyProjects()">
+📁 My Projects
+</button>
+
+<section id="my-projects-panel">
+<h2 style="color:#00cfff">📁 J.A.R.V.I.S. MY PROJECTS</h2>
+
+<form id="my-project-form">
+<input id="mp-name" placeholder="Project Name" required>
+<input id="mp-category" placeholder="Category / Subject">
+<input id="mp-class" placeholder="Class">
+<textarea id="mp-description" placeholder="Project Description" required></textarea>
+<button type="submit">+ Add Project</button>
+</form>
+
+<div id="my-project-list"></div>
+
+<button onclick="closeMyProjects()">Close</button>
+</section>
+
+<script>
+function openMyProjects() {
+  document.getElementById("my-projects-panel").style.display="block";
+  showMyProjects();
+}
+
+function closeMyProjects() {
+  document.getElementById("my-projects-panel").style.display="none";
+}
+
+function getMyProjects() {
+  try {
+    return JSON.parse(localStorage.getItem("jarvis_my_projects") || "[]");
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveMyProjects(data) {
+  localStorage.setItem("jarvis_my_projects", JSON.stringify(data));
+}
+
+function showMyProjects() {
+  const list=document.getElementById("my-project-list");
+  list.replaceChildren();
+
+  const projects=getMyProjects();
+
+  if(projects.length===0) {
+    list.textContent="Abhi koi project nahi hai. Apna pehla project add karo!";
+    return;
+  }
+
+  projects.forEach((p,i)=>{
+    const card=document.createElement("div");
+    card.className="jarvis-project-card";
+
+    const title=document.createElement("h3");
+    title.textContent=p.name;
+
+    const info=document.createElement("p");
+    info.textContent="Category: "+p.category+" | Class: "+p.className;
+
+    const desc=document.createElement("p");
+    desc.textContent=p.description;
+
+    const edit=document.createElement("button");
+    edit.textContent="Edit";
+    edit.onclick=()=>editMyProject(i);
+
+    const del=document.createElement("button");
+    del.textContent="Delete";
+    del.onclick=()=>deleteMyProject(i);
+const aiButton=document.createElement("button");
+aiButton.textContent="🤖 Generate with JARVIS AI";
+
+aiButton.onclick=async()=>{
+  const backendUrl=(document.getElementById("backendUrl")?.value || localStorage.getItem("jarvisBackendUrl") || "").trim();
+
+  if(!backendUrl){
+    alert("Please connect JARVIS Backend in Settings.");
+    return;
+  }
+
+  aiButton.disabled=true;
+  aiButton.textContent="Generating...";
+
+  try{
+    const response=await fetch(backendUrl.replace(/\/$/,"")+"/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        message:"Create a detailed educational project plan for: "+p.name+". Category: "+p.category+". Class: "+p.className+". Description: "+p.description+". Include abstract, modules, components, architecture, safe wiring guidance if relevant, sample code, and PPT points. Explain clearly.",
+        language:"en-IN"
+      })
+    });
+
+    if(!response.ok) throw new Error("Backend connection failed");
+
+    const data=await response.json();
+    const result=document.createElement("pre");
+    result.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;background:#10243a;color:white;padding:12px;border-radius:8px;";
+    result.textContent=data.reply || "No AI response received.";
+   const copyBtn=document.createElement("button");
+copyBtn.textContent="📋 Copy Code";
+copyBtn.onclick=()=>{
+  navigator.clipboard.writeText(data.reply);
+  alert("Project copied!");
+};
+
+const downloadBtn=document.createElement("button");
+downloadBtn.textContent="📥 Download Project";
+downloadBtn.onclick=()=>{
+  const file=new Blob([data.reply],{type:"text/plain"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(file);
+  link.download="JARVIS-Project.txt";
+  link.click();
+  URL.revokeObjectURL(link.href);
+};
+
+card.append(copyBtn,downloadBtn);
+   const pdfBtn=document.createElement("button");
+pdfBtn.textContent="📄 Download as PDF";
+
+pdfBtn.onclick=()=>{
+  const printWindow=window.open("","_blank");
+
+  if(!printWindow){
+    alert("Please allow pop-ups to download PDF.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>JARVIS Project Report</title>
+      <style>
+        body{font-family:Arial;padding:25px;line-height:1.6;}
+        pre{white-space:pre-wrap;overflow-wrap:anywhere;}
+      </style>
+    </head>
+    <body>
+      <h1>J.A.R.V.I.S. Project Report</h1>
+      <pre>${result.textContent.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre>
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
+
+card.appendChild(pdfBtn); 
+    card.appendChild(result);
+
+  }catch(error){
+    alert("AI Error: "+error.message);
+  }finally{
+    aiButton.disabled=false;
+    aiButton.textContent="🤖 Generate with JARVIS AI";
+  }
+};
+    card.append(title,info,desc,aiButton,edit,del);
+    list.appendChild(card);
+  });
+}
+
+document.getElementById("my-project-form").addEventListener("submit",function(e) {
+  e.preventDefault();
+
+  const projects=getMyProjects();
+
+  projects.push({
+    name:document.getElementById("mp-name").value.trim(),
+    category:document.getElementById("mp-category").value.trim(),
+    className:document.getElementById("mp-class").value.trim(),
+    description:document.getElementById("mp-description").value.trim()
+  });
+
+  saveMyProjects(projects);
+  this.reset();
+  showMyProjects();
+});
+
+function editMyProject(i) {
+  const projects=getMyProjects();
+  const p=projects[i];
+
+  const name=prompt("Project name:",p.name);
+  if(name===null) return;
+  if(!name.trim()) return;
+
+  const description=prompt("Project description:",p.description);
+  if(description===null) return;
+
+  p.name=name.trim();
+  p.description=description.trim();
+
+  saveMyProjects(projects);
+  showMyProjects();
+}
+
+function deleteMyProject(i) {
+  if(!confirm("Delete this project?")) return;
+
+  const projects=getMyProjects();
+  projects.splice(i,1);
+  saveMyProjects(projects);
+  showMyProjects();
+}
+body {
+  background-image: url('jarvis-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+</script>  
+</body></html>
