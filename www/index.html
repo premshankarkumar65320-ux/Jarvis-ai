@@ -148,6 +148,7 @@ input, select {
 <footer>J.A.R.V.I.S. · MOBILE FOUNDATION BUILD · AI NOT CONFIGURED</footer>
 <script src="capacitor.js"></script>
 <script src="speech.js"></script>
+<script src="app-launcher.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const log=(text,kind='jarvis')=>{const d=document.createElement('div');d.className='msg '+kind;d.textContent=text;$('chatlog').appendChild(d);$('chatlog').scrollTop=$('chatlog').scrollHeight};
@@ -180,7 +181,37 @@ try{if(window.JarvisSpeech)await window.JarvisSpeech.stop()}catch(e){}
 if('speechSynthesis'in window)speechSynthesis.cancel();
 listening=false;setVoice('SYSTEM STANDBY · VOICE OFF')
 }
-async function sendMessage(text){const t=(text??$('message').value).trim();if(!t)return; if(text===undefined)log(t,'user');$('message').value='';const url=$('backendUrl').value.trim();if(!url){log('AI is not connected yet. No API provider or secure backend has been configured. Your message was not sent anywhere.','system');return}
+async function handleAppCommand(t){
+const lower=t.toLowerCase();
+const searchMatch = lower.match(/(?:search|play|find|ढूंढो|खोजो|चलाओ)\s+(?:on\s+)?(?:youtube|यूट्यूब)?\s*(.*)/i);
+if(searchMatch && searchMatch[1].trim()){
+const query=searchMatch[1].trim();
+try{
+if(!window.JarvisAppLauncher)throw new Error('App launcher not loaded');
+await window.JarvisAppLauncher.searchYouTube({query});
+log('YouTube search: '+query,'system');
+speak('YouTube par '+query+' search kar raha hoon');
+}catch(e){log('YouTube search failed: '+(e.message||e),'system');}
+return true;
+}
+if(!/(open|launch|start|khol|kholo|खोल|चालू)/i.test(lower))return false;
+const apps=[
+{keys:['youtube','यूट्यूब'],name:'YouTube',pkg:'com.google.android.youtube'},
+{keys:['whatsapp','व्हाट्सएप','व्हाट्सऐप'],name:'WhatsApp',pkg:'com.whatsapp'},
+{keys:['chrome','क्रोम'],name:'Chrome',pkg:'com.android.chrome'},
+{keys:['settings','setting','सेटिंग'],name:'Settings',pkg:'com.android.settings'}
+];
+const app=apps.find(a=>a.keys.some(k=>lower.includes(k)));
+if(!app)return false;
+try{
+if(!window.JarvisAppLauncher)throw new Error('App launcher not loaded');
+await window.JarvisAppLauncher.openApp({packageName:app.pkg});
+log('Opening '+app.name,'system');
+speak('Opening '+app.name);
+}catch(e){log('Could not open '+app.name+': '+(e.message||e),'system');}
+return true;
+}
+async function sendMessage(text){const t=(text??$('message').value).trim();if(!t)return; if(text===undefined)log(t,'user');$('message').value='';if(await handleAppCommand(t))return;const url=$('backendUrl').value.trim();if(!url){log('AI is not connected yet. No API provider or secure backend has been configured. Your message was not sent anywhere.','system');return}
 try{const r=await fetch(url.replace(/\/$/,'')+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,language:$('language').value})});if(!r.ok)throw new Error('Backend returned HTTP '+r.status);const data=await r.json();if(typeof data.reply!=='string')throw new Error('Backend response must contain a string named reply');log(data.reply);speak(data.reply)}catch(e){log('Connection failed: '+e.message,'system')}}
 $('listenBtn').onclick=startListening;$('stopBtn').onclick=stop;$('speakBtn').onclick=()=>speak('Hello. I am JARVIS. Voice output is ready.');$('sendBtn').onclick=()=>sendMessage();$('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});$('saveSettings').onclick=()=>{localStorage.setItem('jarvisBackendUrl',$('backendUrl').value.trim());localStorage.setItem('jarvisLanguage',$('language').value);log('Local settings saved on this device.','system')};
 $('backendUrl').value=localStorage.getItem('jarvisBackendUrl')||'';$('language').value=localStorage.getItem('jarvisLanguage')||'en-IN';
